@@ -25,6 +25,13 @@ def get_hosts_info():
     print()  # Move to the next line after the loop
     return hosts_info
 
+def sort_hosts_info(hosts_info, sort_key):
+    # Sort the hosts information based on the given key
+    sort_options = {'ip': 1, 'hostname': 0, 'mac': 2}
+    if sort_key in sort_options:
+        return sorted(hosts_info, key=lambda x: x[sort_options[sort_key]])
+    return hosts_info
+
 # Set up argument parsing for command line options.
 parser = argparse.ArgumentParser(description="List and sort Fritz!Box hosts.")
 parser.add_argument("-s", "--sort", choices=['ip', 'hostname', 'mac'], help="Sort by: 'ip', 'hostname', or 'mac'")
@@ -33,9 +40,10 @@ args = parser.parse_args()
 
 # Retrieve and optionally sort hosts information.
 hosts_info = get_hosts_info()
-print("\nSorting and displaying data...")
-# Add sorting functionality here if needed
+if args.sort:
+    hosts_info = sort_hosts_info(hosts_info, args.sort)
 
+print("\nSorting and displaying data...")
 # Handle output: either print to console or write to a file.
 if args.output:
     with open(args.output, 'w') as file:
@@ -45,4 +53,3 @@ else:
     print(tabulate(hosts_info, headers=['Hostname', 'IP', 'MAC']))
 
 print("Operation completed.")
-
